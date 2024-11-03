@@ -1,0 +1,48 @@
+﻿@model Usuario
+
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<h1>Registro</h1>
+
+<h4>Usuario</h4>
+<hr />
+<section class="row">
+    <section class="col-md-4">
+        <form asp-action="Registro">
+            <section asp-validation-summary="ModelOnly" class="text-danger"></section>
+            <section class="form-group">
+                <label asp-for="idUsuario" class="control-label"></label>
+                <input asp-for="idUsuario" class="form-control" />
+                <span asp-validation-for="idUsuario" class="text-danger"></span>
+            </section>
+            <section class="form-group">
+                <label asp-for="nombre" class="control-label"></label>
+                <input asp-for="nombre" class="form-control" />
+                <span asp-validation-for="nombre" class="text-danger"></span>
+            </section>
+            <section class="form-group">
+                <label asp-for="password" class="control-label"></label>
+                <input asp-for="password" class="form-control" type="password"/>
+                <span asp-validation-for="password" class="text-danger"></span>
+            </section>
+            <section class="form-group">
+                <label asp-for="confirmaPassword" class="control-label"></label>
+                <input asp-for="confirmaPassword" class="form-control" type="password"/>
+                <span asp-validation-for="confirmaPassword" class="text-danger"></span>
+            </section>
+            <section class="form-group mt-2">
+                <input type="submit" value="Registrar Usuario" class="btn btn-primary" />
+            </section>
+        </form>
+    </section>
+</section>
+
+<section>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-danger mt-2">Regresar</a>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

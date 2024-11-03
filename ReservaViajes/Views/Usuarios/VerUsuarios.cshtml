@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Usuario>
+
+@{
+    ViewData["Title"] = "VerUsuarios";
+}
+
+<h1>VerUsuarios</h1>
+
+<p>
+    <a href="@Url.Action("Registro", "Usuarios")" class="btn btn-primary">Crear un usuario</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.idUsuario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.password)
+            </th>
+            @* <th>
+                @Html.DisplayNameFor(model => model.confirmaPassword)
+            </th> *@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.idUsuario)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.password)
+            </td>
+            @* <td>
+                @Html.DisplayFor(modelItem => item.confirmaPassword)
+            </td> *@
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Cambiar contraseña", "CambiarContrasena", new { idUsuario = item.idUsuario }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

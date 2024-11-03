@@ -1,0 +1,44 @@
+﻿@model CambioPassword
+
+@{
+    ViewData["Title"] = "CambiarContrasena";
+}
+
+<h1>CambiarContrasena</h1>
+
+<h4>CambioPassword</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CambiarContrasena">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="idUsuario" />
+            <div class="form-group">
+                <label asp-for="ContrasenaActual" class="control-label"></label>
+                <input asp-for="ContrasenaActual" class="form-control" type="password"/>
+                <span asp-validation-for="ContrasenaActual" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NuevaContrasena" class="control-label"></label>
+                <input asp-for="NuevaContrasena" class="form-control" type="password"/>
+                <span asp-validation-for="NuevaContrasena" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmarContrasena" class="control-label"></label>
+                <input asp-for="ConfirmarContrasena" class="form-control" type="password"/>
+                <span asp-validation-for="ConfirmarContrasena" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a href="@Url.Action("Index", "Home")">Regresar</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
