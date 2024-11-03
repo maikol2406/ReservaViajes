@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ReservaViajes.Models.Rutas.Ruta>
+
+@{
+    ViewData["Title"] = "VerRutas";
+}
+
+<h1>VerRutas</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.idRuta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nombreRuta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.origen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.destino)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.fechaRuta)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.idRuta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nombreRuta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.origen)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.destino)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fechaRuta)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

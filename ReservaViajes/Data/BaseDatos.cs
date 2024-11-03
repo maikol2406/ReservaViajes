@@ -1,11 +1,9 @@
-﻿using Microsoft.DotNet.Scaffolding.Shared.Messaging;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using MySqlConnector;
-using NuGet.Protocol.Plugins;
+﻿using MySqlConnector;
+using ReservaViajes.Models.Buses;
+using ReservaViajes.Models.Rutas;
 using ReservaViajes.Models.Usuarios;
 using System.Security.Cryptography;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ReservaViajes.Data
 {
@@ -169,6 +167,153 @@ namespace ReservaViajes.Data
             return null;
         }
 
+        public async Task<List<Bus>> RetornaBuses()
+        {
+            var listaBuses = new List<Bus>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM buses";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            var bus = new Bus
+                            {
+                                idBus = lector.GetInt32("idBus"),
+                                nombre = lector.GetString("nombre"),
+                                placa = lector.GetString("placa"),
+                                asientos = lector.GetInt32("asientos"),
+                                idRuta = lector.GetInt32("idRuta"),
+                                //nombreRuta = lector.GetString("nombreRuta")
+                                nombreRuta = lector.IsDBNull(lector.GetOrdinal("nombreRuta")) ? null : lector.GetString("nombreRuta")
+                            };
+                            listaBuses.Add(bus);
+                        }
+                    }
+                }
+            }
+            return listaBuses;
+        }
 
+        public async Task agregarBus(Bus bus)
+        {
+            var stringConexion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConexion))
+            {
+                try
+                {
+                    await conexion.OpenAsync();
+                    var query = "INSERT INTO buses (idBus, nombre, placa, asientos, idRuta, nombreRuta) VALUES (@idBus, @nombre, @placa, @asientos, @idRuta, @nombreRuta);";
+                    using (var comando = new MySqlCommand(query, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@idBus", bus.idBus);
+                        comando.Parameters.AddWithValue("@nombre", bus.nombre);
+                        comando.Parameters.AddWithValue("@placa", bus.placa);
+                        comando.Parameters.AddWithValue("@asientos", bus.asientos);
+                        comando.Parameters.AddWithValue("@idRuta", bus.idRuta);
+                        comando.Parameters.AddWithValue("@nombreRuta", bus.nombreRuta);
+
+                        await comando.ExecuteNonQueryAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw new Exception("Error al guardar los datos del bus. " + e.Message);
+                }
+            }
+        }
+
+        public async Task<List<Ruta>> ObtenerRutas()
+        {
+            var listaRutas = new List<Ruta>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM rutas";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            var ruta = new Ruta
+                            {
+                                idRuta = lector.GetInt32("idRuta"),
+                                nombreRuta = lector.GetString("nombreRuta"),
+                                origen = lector.GetString("origen"),
+                                destino = lector.GetString("destino"),
+                                fechaRuta = lector.GetDateTime("fechaRuta")
+                            };
+                            listaRutas.Add(ruta);
+                        }
+                    }
+                }
+            }
+            return listaRutas;
+        }
+
+        public async Task<Ruta> ObtenerRuta(int idRuta)
+        {
+            var Ruta = new Ruta();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM rutas WHERE idRuta = @idRuta";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("idRuta", idRuta);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            Ruta = new Ruta
+                            {
+                                idRuta = lector.GetInt32("idRuta"),
+                                nombreRuta = lector.GetString("nombreRuta"),
+                                origen = lector.GetString("origen"),
+                                destino = lector.GetString("destino"),
+                                fechaRuta = lector.GetDateTime("fechaRuta")
+                            };
+                        }
+                    }
+                }
+            }
+            return Ruta;
+        }
+
+        public async Task agregarRuta(Ruta ruta)
+        {
+            var stringConexion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConexion))
+            {
+                try
+                {
+                    await conexion.OpenAsync();
+                    var query = "INSERT INTO rutas (idRuta, nombreRuta, origen, destino, fechaRuta) VALUES (@idRuta, @nombreRuta, @origen, @destino, @fechaRuta);";
+                    using (var comando = new MySqlCommand(query, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@idRuta", ruta.idRuta);
+                        comando.Parameters.AddWithValue("@nombreRuta", ruta.nombreRuta);
+                        comando.Parameters.AddWithValue("@origen", ruta.origen);
+                        comando.Parameters.AddWithValue("@destino", ruta.destino);
+                        comando.Parameters.AddWithValue("@fechaRuta", ruta.fechaRuta);
+
+                        await comando.ExecuteNonQueryAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw new Exception("Error al guardar los datos de la ruta. " + e.Message);
+                }
+            }
+        }
     }
 }

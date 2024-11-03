@@ -1,0 +1,53 @@
+﻿@model ReservaViajes.Models.Rutas.Ruta
+
+@{
+    ViewData["Title"] = "CrearRuta";
+}
+
+<h1>CrearRuta</h1>
+
+<h4>Ruta</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CrearRuta">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="idRuta" class="control-label"></label>
+                <input asp-for="idRuta" class="form-control" />
+                <span asp-validation-for="idRuta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="nombreRuta" class="control-label"></label>
+                <input asp-for="nombreRuta" class="form-control" />
+                <span asp-validation-for="nombreRuta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="origen" class="control-label"></label>
+                <input asp-for="origen" class="form-control" />
+                <span asp-validation-for="origen" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="destino" class="control-label"></label>
+                <input asp-for="destino" class="form-control" />
+                <span asp-validation-for="destino" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="fechaRuta" class="control-label"></label>
+                <input asp-for="fechaRuta" class="form-control" />
+                <span asp-validation-for="fechaRuta" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

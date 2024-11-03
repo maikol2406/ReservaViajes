@@ -34,7 +34,7 @@ namespace ReservaViajes.Controllers
                     return View(login);
                 }
 
-                bool isValidUser = await _baseDatos.ValidarUsuario(new Models.Login
+                bool isValidUser = await _baseDatos.ValidarUsuario(new Models.Usuarios.Login
                 {
                     idUsuario = login.idUsuario,
                     password = login.password
