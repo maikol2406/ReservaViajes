@@ -23,6 +23,11 @@
                 <span asp-validation-for="nombre" class="text-danger"></span>
             </section>
             <section class="form-group">
+                <label asp-for="correo" class="control-label"></label>
+                <input asp-for="correo" class="form-control" type="email" />
+                <span asp-validation-for="correo" class="text-danger"></span>
+            </section>
+            <section class="form-group">
                 <label asp-for="password" class="control-label"></label>
                 <input asp-for="password" class="form-control" type="password"/>
                 <span asp-validation-for="password" class="text-danger"></span>

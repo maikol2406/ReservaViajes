@@ -34,7 +34,10 @@ namespace ReservaViajes.Controllers
                 idBus = item.idBus;
             }
             idBus++;
-            var bus = new Bus { idBus = idBus };
+            var bus = new Bus 
+            { 
+                idBus = idBus 
+            };
             List<SelectListItem> rutas = new List<SelectListItem>();
             foreach (var item in await _baseDatos.ObtenerRutas())
             {

@@ -1,0 +1,163 @@
+﻿@model ReservaViajes.Models.Reservas.Reserva
+
+@{
+    ViewData["Title"] = "CrearReservas";
+    List<SelectListItem> listaRutas = ViewBag.rutas;
+}
+
+<h1>Cree su Reserva</h1>
+
+<h4>Ingrese los siguientes datos</h4>
+<hr />
+<section class="row">
+    <section class="col-md-4">
+        <form asp-action="CrearReservas">
+            <section asp-validation-summary="ModelOnly" class="text-danger"></section>
+            <section class="form-group" hidden>
+                <label asp-for="idReserva" class="control-label"></label>
+                <input asp-for="idReserva" class="form-control" />
+                <span asp-validation-for="idReserva" class="text-danger"></span>
+            </section>
+            <section class="form-group" hidden>
+                <label asp-for="idUsuario" class="control-label"></label>
+                <input asp-for="idUsuario" class="form-control" />
+                <span asp-validation-for="idUsuario" class="text-danger"></span>
+            </section>
+            <section class="form-group">
+                <label asp-for="nombreUsuario" class="control-label"></label>
+                <input asp-for="nombreUsuario" class="form-control" value="@User.Identity.Name" />
+                <span asp-validation-for="nombreUsuario" class="text-danger"></span>
+            </section>
+            <section class="form-group">
+                <label class="control-label">Ruta a tomar</label>
+                @Html.DropDownListFor(datos => datos.idRuta, listaRutas, "Seleccione la ruta deseada", new { @class = "form-control", @id = "rutaDropdown", @disabled = "disabled" })
+                <input type="hidden" asp-for="idRuta" id="idRutaHidden" name="idRuta" />
+                <span asp-validation-for="idRuta" class="text-danger"></span>
+            </section>
+            <section class="form-group">
+                <label class="control-label">Bus a abordar</label>
+                @Html.DropDownListFor(datos => datos.idBus, new List<SelectListItem>(), "Seleccione el bus deseado", new { @class = "form-control", @id = "busDropdown" })
+                <span asp-validation-for="idBus" class="text-danger"></span>
+            </section>
+            <section class="form-group">
+                <label>Seleccione los asientos:</label>
+                <section id="asientos">
+                </section>
+            </section>
+            <section class="form-group">
+                <label asp-for="costo" class="control-label"></label>
+                <input asp-for="costo" class="form-control totalCosto" id="totalCosto" />
+                <span asp-validation-for="costo" class="text-danger"></span>
+            </section>
+            <section class="form-group mt-2">
+                <input type="submit" value="Crear reserva" class="btn btn-primary" />
+            </section>
+        </form>
+    </section>
+</section>
+
+<section>
+    <a asp-action="Index">Back to List</a>
+</section>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        let asientoCosto = 0;
+
+        $(document).ready(function () {
+            cargarBusesPorRuta();
+
+            function cargarBusesPorRuta() {
+                const idRuta = $('#rutaDropdown').val();
+                if (idRuta) {
+                    $.ajax({
+                        url: '@Url.Action("ObtenerBusesPorRuta", "Reservas")',
+                        data: { idRuta: idRuta },
+                        success: function (data) {
+                            const busDropdown = $('#busDropdown');
+                            busDropdown.empty();
+                            busDropdown.append('<option value="">Seleccione el bus deseado</option>');
+
+                            if (data && data.buses) {
+                                $.each(data.buses, function (i, bus) {
+                                    busDropdown.append($('<option>', {
+                                        value: bus.idBus,
+                                        text: bus.nombre
+                                    }));
+                                });
+                                asientoCosto = data.costo;
+                            } else {
+                                alert("No se pudieron cargar los buses. Intente nuevamente.");
+                            }
+                        },
+                        error: function () {
+                            alert("Error al obtener los buses. Intente nuevamente.");
+                        }
+                    });
+                } else {
+                    $('#busDropdown').empty().append('<option value="">Seleccione el bus</option>');
+                    asientoCosto = 0;
+                }
+                actualizarCosto();
+            }
+
+            $('#busDropdown').change(function () {
+                const busId = $(this).val();
+                if (busId) {
+                    $.ajax({
+                        url: '@Url.Action("ObtenerCantidadAsientos", "Reservas")',
+                        data: { idBus: busId },
+                        success: function (data) {
+                            const asientos = $('#asientos');
+                            asientos.empty();
+                            if (data && Array.isArray(data.asientosReservados)) {
+                                let row;
+                                for (let i = 1; i <= data.cantidadAsientos; i++) {
+                                    const isReserved = data.asientosReservados.includes(i);
+                                    if ((i - 1) % 4 === 0) {
+                                        row = $('<div class="row"></div>');
+                                        asientos.append(row);
+                                    }
+                                    const asientoHtml = `
+                                                <div class="col-md-3 mb-2">
+                                                    <section class="form-check">
+                                                        <input class="form-check-input asientoCheckbox" type="checkbox" name="asientosSeleccionados" value="${i}" id="asiento${i}" ${isReserved ? 'disabled checked' : ''}>
+                                                        <label class="form-check-label" for="asiento${i}">Asiento ${i} ${isReserved ? '(Reservado)' : ''}</label>
+                                                    </section>
+                                                </div>`;
+                                    row.append(asientoHtml);
+                                }
+
+                                $('.asientoCheckbox').change(function () {
+                                    actualizarCosto();
+                                });
+                            } else {
+                                alert("No se pudo obtener la lista de asientos reservados. Intente nuevamente.");
+                            }
+                        },
+                        error: function () {
+                            alert("Error al obtener la cantidad de asientos. Intente nuevamente.");
+                        }
+                    });
+                } else {
+                    $('#asientos').empty();
+                    actualizarCosto();
+                }
+            });
+
+            function actualizarCosto() {
+                const seleccionados = $('.asientoCheckbox:checked:not([disabled])').length;
+                const totalCosto = Math.floor(asientoCosto * seleccionados);
+                $('#totalCosto').val(totalCosto);
+                $('#hiddenCosto').val(totalCosto);
+            }
+
+
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -19,5 +19,9 @@ namespace ReservaViajes.Models.Usuarios
         [DataType(DataType.Password)]
         [Compare("password", ErrorMessage = "Las contraseñas no coinciden")]
         public string confirmaPassword { get; set; }
+        [Required]
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Correo")]
+        public string correo { get; set; }
     }
 }

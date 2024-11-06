@@ -1,5 +1,7 @@
 ﻿using MySqlConnector;
 using ReservaViajes.Models.Buses;
+using ReservaViajes.Models.Pagos;
+using ReservaViajes.Models.Reservas;
 using ReservaViajes.Models.Rutas;
 using ReservaViajes.Models.Usuarios;
 using System.Security.Cryptography;
@@ -46,6 +48,7 @@ namespace ReservaViajes.Data
                             {
                                 idUsuario = lector.GetInt32("idUsuario"),
                                 nombre = lector.GetString("nombre"),
+                                correo = lector.GetString("correo"),
                                 password = lector.GetString("password")
                             };
                             listaUsuarios.Add(usuario);
@@ -64,12 +67,13 @@ namespace ReservaViajes.Data
                 using (var conexion = new MySqlConnection(connectionString))
                 {
                     await conexion.OpenAsync();
-                    var query = "INSERT INTO usuarios (idUsuario, nombre, password) VALUES (@idUsuario, @nombre, @password);";
+                    var query = "INSERT INTO usuarios (idUsuario, nombre, correo, password) VALUES (@idUsuario, @nombre, @correo, @password);";
 
                     using (var comando = new MySqlCommand(query, conexion))
                     {
                         comando.Parameters.AddWithValue("@idUsuario", usuario.idUsuario);
                         comando.Parameters.AddWithValue("@nombre", usuario.nombre);
+                        comando.Parameters.AddWithValue("@correo", usuario.correo);
                         comando.Parameters.AddWithValue("@password", EncriptaContrasena(usuario.password));
 
                         await comando.ExecuteNonQueryAsync();
@@ -115,7 +119,7 @@ namespace ReservaViajes.Data
             return true;
         }
 
-        public async Task<bool> ValidarUsuario(Models.Usuarios.Login login)
+        public async Task<bool> ValidarUsuario(Login login)
         {
             var connectionString = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(connectionString))
@@ -145,7 +149,7 @@ namespace ReservaViajes.Data
 
                 var passwordEncriptada = EncriptaContrasena(login.password);
 
-                var query = "SELECT idUsuario, nombre FROM usuarios WHERE idUsuario = @idUsuario AND password = @password";
+                var query = "SELECT idUsuario, nombre, correo FROM usuarios WHERE idUsuario = @idUsuario AND password = @password";
                 using (var comando = new MySqlCommand(query, conexion))
                 {
                     comando.Parameters.AddWithValue("@idUsuario", login.idUsuario);
@@ -155,11 +159,13 @@ namespace ReservaViajes.Data
                     {
                         if (await reader.ReadAsync())
                         {
-                            return new Usuario
+                            var usuario = new Usuario
                             {
                                 idUsuario = reader.GetInt32("idUsuario"),
-                                nombre = reader.GetString("nombre")
+                                nombre = reader.GetString("nombre"),
+                                correo = reader.GetString("correo")
                             };
+                            return usuario;
                         }
                     }
                 }
@@ -197,6 +203,99 @@ namespace ReservaViajes.Data
                 }
             }
             return listaBuses;
+        }
+
+        public async Task<List<Bus>> ObtenerBusesXRuta(int idRuta)
+        {
+            var listaBuses = new List<Bus>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM buses WHERE idRuta = @idRuta";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("idRuta", idRuta);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            var bus = new Bus
+                            {
+                                idBus = lector.GetInt32("idBus"),
+                                nombre = lector.GetString("nombre"),
+                                placa = lector.GetString("placa"),
+                                asientos = lector.GetInt32("asientos"),
+                                idRuta = lector.GetInt32("idRuta"),
+                                nombreRuta = lector.IsDBNull(lector.GetOrdinal("nombreRuta")) ? null : lector.GetString("nombreRuta")
+                            };
+                            listaBuses.Add(bus);
+                        }
+                    }
+                }
+            }
+            return listaBuses;
+        }
+
+        public async Task<Bus> ObtenerBus(int idBus)
+        {
+            var bus = new Bus();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM buses WHERE idBus = @idBus";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("idBus", idBus);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            bus = new Bus
+                            {
+                                idBus = lector.GetInt32("idBus"),
+                                nombre = lector.GetString("nombre"),
+                                placa = lector.GetString("placa"),
+                                asientos = lector.GetInt32("asientos"),
+                                idRuta = lector.GetInt32("idRuta"),
+                                nombreRuta = lector.IsDBNull(lector.GetOrdinal("nombreRuta")) ? null : lector.GetString("nombreRuta")
+                            };
+                        }
+                    }
+                }
+            }
+            return bus;
+        }
+
+        public async Task<Bus> ObtenerBusPorId(int idBus)
+        {
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM buses WHERE idBus = @idBus";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@idBus", idBus);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        if (await lector.ReadAsync())
+                        {
+                            return new Bus
+                            {
+                                idBus = lector.GetInt32("idBus"),
+                                nombre = lector.GetString("nombre"),
+                                placa = lector.GetString("placa"),
+                                asientos = lector.GetInt32("asientos"),
+                                idRuta = lector.IsDBNull(lector.GetOrdinal("idRuta")) ? 0 : lector.GetInt32("idRuta"),
+                                nombreRuta = lector.IsDBNull(lector.GetOrdinal("nombreRuta")) ? null : lector.GetString("nombreRuta")
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         public async Task agregarBus(Bus bus)
@@ -248,7 +347,8 @@ namespace ReservaViajes.Data
                                 nombreRuta = lector.GetString("nombreRuta"),
                                 origen = lector.GetString("origen"),
                                 destino = lector.GetString("destino"),
-                                fechaRuta = lector.GetDateTime("fechaRuta")
+                                fechaRuta = lector.GetDateTime("fechaRuta"),
+                                costo = lector.GetDecimal("costo")
                             };
                             listaRutas.Add(ruta);
                         }
@@ -279,7 +379,8 @@ namespace ReservaViajes.Data
                                 nombreRuta = lector.GetString("nombreRuta"),
                                 origen = lector.GetString("origen"),
                                 destino = lector.GetString("destino"),
-                                fechaRuta = lector.GetDateTime("fechaRuta")
+                                fechaRuta = lector.GetDateTime("fechaRuta"),
+                                costo = lector.GetDecimal("costo")
                             };
                         }
                     }
@@ -296,7 +397,7 @@ namespace ReservaViajes.Data
                 try
                 {
                     await conexion.OpenAsync();
-                    var query = "INSERT INTO rutas (idRuta, nombreRuta, origen, destino, fechaRuta) VALUES (@idRuta, @nombreRuta, @origen, @destino, @fechaRuta);";
+                    var query = "INSERT INTO rutas (idRuta, nombreRuta, origen, destino, fechaRuta, ruta) VALUES (@idRuta, @nombreRuta, @origen, @destino, @fechaRuta, @ruta);";
                     using (var comando = new MySqlCommand(query, conexion))
                     {
                         comando.Parameters.AddWithValue("@idRuta", ruta.idRuta);
@@ -304,6 +405,7 @@ namespace ReservaViajes.Data
                         comando.Parameters.AddWithValue("@origen", ruta.origen);
                         comando.Parameters.AddWithValue("@destino", ruta.destino);
                         comando.Parameters.AddWithValue("@fechaRuta", ruta.fechaRuta);
+                        comando.Parameters.AddWithValue("@costo", ruta.costo);
 
                         await comando.ExecuteNonQueryAsync();
                     }
@@ -315,5 +417,215 @@ namespace ReservaViajes.Data
                 }
             }
         }
+
+        public async Task<List<Reserva>> ObtenerReservas()
+        {
+            var listaReservas = new List<Reserva>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM reservas";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            //string asientosString = lector.IsDBNull(lector.GetOrdinal("asientosSeleccionados")) ? "" : lector.GetString("asientosSeleccionados");
+
+                            string asientosString = lector.IsDBNull(lector.GetOrdinal("asientosSeleccionados"))
+                                ? ""
+                                : lector.GetString("asientosSeleccionados");
+
+                            List<int> asientosSeleccionados = asientosString
+                                .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(int.Parse)
+                                .ToList();
+                            var reserva = new Reserva
+                            {
+                                idReserva = lector.IsDBNull(lector.GetOrdinal("idReserva")) ? 0 : lector.GetInt32("idReserva"),
+                                idUsuario = lector.IsDBNull(lector.GetOrdinal("idUsuario")) ? 0 : lector.GetInt32("idUsuario"),
+                                nombreUsuario = lector.IsDBNull(lector.GetOrdinal("nombreUsuario")) ? "" : lector.GetString("nombreUsuario"),
+                                idBus = lector.IsDBNull(lector.GetOrdinal("idBus")) ? 0 : lector.GetInt32("idBus"),
+                                nombreBus = lector.IsDBNull(lector.GetOrdinal("nombreBus")) ? "" : lector.GetString("nombreBus"),
+                                idRuta = lector.IsDBNull(lector.GetOrdinal("idRuta")) ? 0 : lector.GetInt32("idRuta"),
+                                nombreRuta = lector.IsDBNull(lector.GetOrdinal("nombreRuta")) ? "" : lector.GetString("nombreRuta"),
+                                asientosSeleccionados = asientosSeleccionados,
+                                costo = lector.IsDBNull(lector.GetOrdinal("costo")) ? 0 : lector.GetInt32("costo")
+                            };
+                            listaReservas.Add(reserva);
+                        }
+                    }
+                }
+            }
+            return listaReservas;
+        }
+
+        public async Task AgregarReserva(Reserva reserva)
+        {
+            var stringConexion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConexion))
+            {
+                try
+                {
+                    await conexion.OpenAsync();
+                    string asientosSeleccionados = string.Join(",", reserva.asientosSeleccionados);
+                    var query = "INSERT INTO reservas (idReserva, idUsuario, nombreUsuario, idBus, nombreBus, idRuta, nombreRuta, asientosSeleccionados, costo)" +
+                        "VALUES (@idReserva, @idUsuario, @nombreUsuario, @idBus, @nombreBus, @idRuta, @nombreRuta, @asientosSeleccionados, @costo);";
+                    using (var comando = new MySqlCommand(query, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@idReserva", reserva.idReserva);
+                        comando.Parameters.AddWithValue("@idUsuario", reserva.idUsuario);
+                        comando.Parameters.AddWithValue("@nombreUsuario", reserva.nombreUsuario);
+                        comando.Parameters.AddWithValue("@idBus", reserva.idBus);
+                        comando.Parameters.AddWithValue("@nombreBus", reserva.nombreBus);
+                        comando.Parameters.AddWithValue("@idRuta", reserva.idRuta);
+                        comando.Parameters.AddWithValue("@nombreRuta", reserva.nombreRuta);
+                        comando.Parameters.AddWithValue("@asientosSeleccionados", asientosSeleccionados);
+                        comando.Parameters.AddWithValue("@costo", reserva.costo);
+
+                        await comando.ExecuteNonQueryAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw new Exception("Error al guardar los datos de la reserva. " + e.Message);
+                }
+            }
+        }
+
+        public async Task<Reserva> ObtenerReserva(int idReserva)
+        {
+            Reserva reserva = new Reserva();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM reservas WHERE idReserva = @idReserva";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@idReserva", idReserva);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            string asientosString = lector.IsDBNull(lector.GetOrdinal("asientosSeleccionados")) ? "" : lector.GetString("asientosSeleccionados");
+                            List<int> asientosSeleccionados = asientosString
+                                .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(int.Parse)
+                                .ToList();
+
+                            reserva = new Reserva
+                            {
+                                idReserva = lector.GetInt32("idReserva"),
+                                idUsuario = lector.GetInt32("idUsuario"),
+                                nombreUsuario = lector.GetString("nombreUsuario"),
+                                idBus = lector.GetInt32("idBus"),
+                                nombreBus = lector.GetString("nombreBus"),
+                                idRuta = lector.GetInt32("idRuta"),
+                                nombreRuta = lector.GetString("nombreRuta"),
+                                asientosSeleccionados = asientosSeleccionados,
+                                costo = lector.GetInt32("costo")
+                            };
+                        }
+                    }
+                }
+            }
+            return reserva;
+        }
+
+        public async Task<List<int>> ObtenerAsientosOcupados(int idBus)
+        {
+            var asientosOcupados = new List<int>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT asientosSeleccionados FROM reservas WHERE idBus = @idBus";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@idBus", idBus);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            string asientosSeleccionados = lector.GetString("asientosSeleccionados");
+                            asientosOcupados.AddRange(asientosSeleccionados.Split(',').Select(int.Parse));
+                        }
+                    }
+                }
+            }
+            return asientosOcupados;
+        }
+
+        public async Task<List<Pago>> ObtenerPagos()
+        {
+            var listaPagos = new List<Pago>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM pagos";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            var pago = new Pago
+                            {
+                                pk_tsal001 = lector.IsDBNull(lector.GetOrdinal("pk_tsal001")) ? "" : lector.GetString("pk_tsal001"),
+                                terminalId = lector.IsDBNull(lector.GetOrdinal("terminalId")) ? "" : lector.GetString("terminalId"),
+                                transactionType = lector.IsDBNull(lector.GetOrdinal("transactionType")) ? "" : lector.GetString("transactionType"),
+                                invoice = lector.IsDBNull(lector.GetOrdinal("invoice")) ? "" : lector.GetString("invoice"),
+                                totalAmount = lector.IsDBNull(lector.GetOrdinal("totalAmount")) ? "" : lector.GetString("totalAmount"),
+                                taxAmount = lector.IsDBNull(lector.GetOrdinal("taxAmount")) ? "" : lector.GetString("taxAmount"),
+                                tipAmount = lector.IsDBNull(lector.GetOrdinal("tipAmount")) ? "" : lector.GetString("tipAmount"),
+                                clientEmail = lector.IsDBNull(lector.GetOrdinal("clientEmail")) ? "" : lector.GetString("clientEmail")
+                            };
+                            listaPagos.Add(pago);
+                        }
+                    }
+                }
+            }
+            return listaPagos;
+        }
+
+        public async Task AgregarPago(Pago pago)
+        {
+            var stringConexion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConexion))
+            {
+                try
+                {
+                    await conexion.OpenAsync();
+
+                    var query = "INSERT INTO pagos (pk_tsal001, terminalId, transactionType, invoice, totalAmount, taxAmount, tipAmount, clientEmail)" +
+                        "VALUES (@pk_tsal001, @terminalId, @transactionType, @invoice, @totalAmount, @taxAmount, @tipAmount, @clientEmail);";
+                    using (var comando = new MySqlCommand(query, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@pk_tsal001", pago.pk_tsal001);
+                        comando.Parameters.AddWithValue("@terminalId", pago.terminalId);
+                        comando.Parameters.AddWithValue("@transactionType", pago.transactionType);
+                        comando.Parameters.AddWithValue("@invoice", pago.invoice);
+                        comando.Parameters.AddWithValue("@totalAmount", pago.totalAmount);
+                        comando.Parameters.AddWithValue("@taxAmount", pago.taxAmount);
+                        comando.Parameters.AddWithValue("@tipAmount", pago.tipAmount);
+                        comando.Parameters.AddWithValue("@clientEmail", pago.clientEmail);
+
+                        await comando.ExecuteNonQueryAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw new Exception("Error al guardar los datos de la reserva. " + e.Message);
+                }
+            }
+        }
+
     }
 }

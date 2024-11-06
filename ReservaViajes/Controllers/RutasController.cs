@@ -54,39 +54,6 @@ namespace ReservaViajes.Controllers
             }
         }
 
-        // GET: RutasController
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        // GET: RutasController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: RutasController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: RutasController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
         // GET: RutasController/Edit/5
         public ActionResult Edit(int id)
         {

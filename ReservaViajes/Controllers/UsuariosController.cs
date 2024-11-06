@@ -43,14 +43,16 @@ namespace ReservaViajes.Controllers
                 if (!isValidUser)
                 {
                     ModelState.AddModelError(string.Empty, "Cédula o contraseña incorrectos.");
-                    return RedirectToAction("Index", "Home");
+                    return View(login);
                 }
 
                 Usuario? usuario = await _baseDatos.ObtenerUsuario(login);
 
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, usuario.nombre)
+                    new Claim(ClaimTypes.Name, usuario.nombre),
+                    new Claim("idUsuario", usuario.idUsuario.ToString()),
+                    new Claim("correo", usuario.correo)
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

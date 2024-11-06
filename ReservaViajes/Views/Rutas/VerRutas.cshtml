@@ -25,6 +25,9 @@
                 @Html.DisplayNameFor(model => model.destino)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.costo)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.fechaRuta)
             </th>
             <th></th>
@@ -45,12 +48,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.destino)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.costo)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.fechaRuta)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Realizar compra", "CrearReservas", "Reservas", new { idRuta = item.idRuta }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>

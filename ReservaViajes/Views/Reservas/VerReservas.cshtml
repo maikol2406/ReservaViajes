@@ -1,0 +1,83 @@
+﻿@model IEnumerable<ReservaViajes.Models.Reservas.Reserva>
+
+@{
+    ViewData["Title"] = "VerReservas";
+}
+
+<h1>VerReservas</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.idReserva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.idUsuario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nombreUsuario)
+            </th>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.idBus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nombreBus)
+            </th>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.idRuta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nombreRuta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.asientosSeleccionados)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.costo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.idReserva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.idUsuario)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nombreUsuario)
+            </td>
+            <td hidden>
+                @Html.DisplayFor(modelItem => item.idBus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nombreBus)
+            </td>
+            <td hidden>
+                @Html.DisplayFor(modelItem => item.idRuta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.nombreRuta)
+            </td>
+            <td>
+                @string.Join(", ", item.asientosSeleccionados)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.costo)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Pagar Reserva", "CrearPago", "Pagos", new { idReserva = item.idReserva }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
