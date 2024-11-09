@@ -5,9 +5,9 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>
+                @* <th>
                     @Html.DisplayNameFor(model => model.idRuta)
-                </th>
+                </th> *@
                 <th>
                     @Html.DisplayNameFor(model => model.nombreRuta)
                 </th>
@@ -23,16 +23,16 @@
                 <th>
                     @Html.DisplayNameFor(model => model.costo)
                 </th>
-                <th></th>
+                <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var ruta in Model)
             {
                 <tr>
-                    <td>
+                   @*  <td>
                         @Html.DisplayFor(modelItem => ruta.idRuta)
-                    </td>
+                    </td> *@
                     <td>
                         @Html.DisplayFor(modelItem => ruta.nombreRuta)
                     </td>

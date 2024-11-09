@@ -168,53 +168,6 @@ namespace ReservaViajes.Controllers
                                 }
                             }
                         }
-
-                        //using (HttpClient cliente2 = new HttpClient())
-                        //{
-                        //    string link2 = URL_SB2B + "/chrome/open-chrome";
-                        //    string jsonPago2 = JsonConvert.SerializeObject(respuestaLinkPago);
-                        //    StringContent contenido2 = new StringContent(jsonPago2, Encoding.UTF8, "application/json");
-
-                        //    HttpResponseMessage responseChrome = await cliente2.PostAsync(link2, contenido2);
-                        //    if (responsePago.IsSuccessStatusCode)
-                        //    {
-                        //        string respuestatoken = await responsePago.Content.ReadAsStringAsync();
-                        //        //await Task.Delay(30000);
-                        //        using (HttpClient clientePago = new HttpClient())
-                        //        {
-                        //            clientePago.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                        //            string linkPago = URL_SB2B + "ConsultaEstado";
-                        //            ConsultaPago consultaPago = new ConsultaPago();
-                        //            consultaPago.pk_tsal001 = pago.pk_tsal001;
-                        //            string jsonConsultaPago = JsonConvert.SerializeObject(consultaPago);
-                        //            StringContent contenidoPago = new StringContent(jsonConsultaPago, Encoding.UTF8, "application/json");
-                        //            //HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
-                        //            bool seguir = true;
-                        //            while (seguir)
-                        //            {
-                        //                HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
-                        //                await Task.Delay(3000);
-                        //                if (responseConsultaPago.IsSuccessStatusCode)
-                        //                {
-                        //                    string respuestaConsulta = await responseConsultaPago.Content.ReadAsStringAsync();
-                        //                    ConsultaPago consulta = JsonConvert.DeserializeObject<ConsultaPago>(respuestaConsulta);
-                        //                    if (consulta.codigo == 1)
-                        //                    {
-                        //                        await _baseDatos.AgregarPago(pago);
-                        //                        Reserva reserva = await _baseDatos.ObtenerReserva(pago.idReserva);
-                        //                        reserva.estado = true;
-                        //                        seguir = false;
-                        //                        await _baseDatos.ActualizarReserva(pago.idReserva);
-                        //                        return RedirectToAction("VerReservas", "Reservas");
-                        //                    }
-                        //                }
-                        //            }
-                        //        }
-
-                        //    }
-                        //}
-                        //return RedirectToAction("VerReservas", "Reservas");
-                        //return View();
                     }
                 }
                 return RedirectToAction("VerReservas", "Reservas");

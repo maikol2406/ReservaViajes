@@ -1,37 +1,39 @@
 ﻿@model ReservaViajes.Models.Usuarios.Login
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Inicio de sesión";
 }
 
-<h1>Login</h1>
+<h1>Iniciar sesión</h1>
 
-<h4>Login</h4>
+
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="idUsuario" class="control-label"></label>
-                <input asp-for="idUsuario" class="form-control" />
-                <span asp-validation-for="idUsuario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="password" class="control-label"></label>
-                <input asp-for="password" class="form-control" type="password"/>
-                <span asp-validation-for="password" class="text-danger"></span>
-            </div>
-            <div class="form-group mt-2">
-                <input type="submit" value="Iniciar sesión" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+<section class="d-flex justify-content-center">
+    <section class="col-md-6 col-lg-4">
+        <section class="card shadow-sm p-4">
+            <form asp-action="Login">
+                <section asp-validation-summary="ModelOnly" class="text-danger"></section>
+                <section class="form-group mb-3">
+                    <label asp-for="idUsuario" class="control-label"></label>
+                    <input asp-for="idUsuario" class="form-control" placeholder="Ingrese su cédula" />
+                    <span asp-validation-for="idUsuario" class="text-danger"></span>
+                </section>
+                <section class="form-group mb-3">
+                    <label asp-for="password" class="control-label"></label>
+                    <input asp-for="password" class="form-control" type="password" placeholder="Ingrese su contraseña" />
+                    <span asp-validation-for="password" class="text-danger"></span>
+                </section>
+                <section class="d-grid gap-2">
+                    <input type="submit" value="Iniciar sesión" class="btn btn-primary" />
+                </section>
+            </form>
+        </section>
+    </section>
+</section>
 
-<div>
-    <a href="@Url.Action("Index", "Home")">Regresar</a>
-</div>
+<section class="text-center mt-3">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-warning">Regresar al inicio</a>
+</section>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

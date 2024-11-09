@@ -1,53 +1,59 @@
 ﻿@model ReservaViajes.Models.Usuarios.Usuario
 
 @{
-    ViewData["Title"] = "Registro";
+    ViewData["Title"] = "Crear usuario";
 }
 
-<h1>Registro</h1>
+<h1 class="text-center my-4">Registro nuevo</h1>
 
-<h4>Usuario</h4>
-<hr />
-<section class="row">
-    <section class="col-md-4">
-        <form asp-action="Registro">
-            <section asp-validation-summary="ModelOnly" class="text-danger"></section>
-            <section class="form-group">
-                <label asp-for="idUsuario" class="control-label"></label>
-                <input asp-for="idUsuario" class="form-control" />
-                <span asp-validation-for="idUsuario" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label asp-for="nombre" class="control-label"></label>
-                <input asp-for="nombre" class="form-control" />
-                <span asp-validation-for="nombre" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label asp-for="correo" class="control-label"></label>
-                <input asp-for="correo" class="form-control" type="email" />
-                <span asp-validation-for="correo" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label asp-for="password" class="control-label"></label>
-                <input asp-for="password" class="form-control" type="password"/>
-                <span asp-validation-for="password" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label asp-for="confirmaPassword" class="control-label"></label>
-                <input asp-for="confirmaPassword" class="form-control" type="password"/>
-                <span asp-validation-for="confirmaPassword" class="text-danger"></span>
-            </section>
-            <section class="form-group mt-2">
-                <input type="submit" value="Registrar Usuario" class="btn btn-primary" />
-            </section>
-        </form>
+<section class="d-flex justify-content-center">
+    <section class="col-md-6 col-lg-5">
+        <section class="card shadow-sm p-4">
+            <h4 class="text-center">Crear usuario</h4>
+            <hr />
+            <form asp-action="Registro">
+                <section asp-validation-summary="ModelOnly" class="text-danger mb-3"></section>
+
+                <section class="form-group mb-3">
+                    <label asp-for="idUsuario" class="control-label"></label>
+                    <input asp-for="idUsuario" class="form-control" placeholder="Ingrese su cédula" />
+                    <span asp-validation-for="idUsuario" class="text-danger"></span>
+                </section>
+                <section class="form-group mb-3">
+                    <label asp-for="nombre" class="control-label"></label>
+                    <input asp-for="nombre" class="form-control" placeholder="Ingrese su nombre completo" />
+                    <span asp-validation-for="nombre" class="text-danger"></span>
+                </section>
+                <section class="form-group mb-3">
+                    <label asp-for="correo" class="control-label"></label>
+                    <input asp-for="correo" class="form-control" type="email" placeholder="Ingrese su correo electrónico" />
+                    <span asp-validation-for="correo" class="text-danger"></span>
+                </section>
+                <section class="form-group mb-3">
+                    <label asp-for="password" class="control-label"></label>
+                    <input asp-for="password" class="form-control" type="password" placeholder="Ingrese su contraseña" />
+                    <span asp-validation-for="password" class="text-danger"></span>
+                </section>
+                <section class="form-group mb-3">
+                    <label asp-for="confirmaPassword" class="control-label"></label>
+                    <input asp-for="confirmaPassword" class="form-control" type="password" placeholder="Confirme su contraseña" />
+                    <span asp-validation-for="confirmaPassword" class="text-danger"></span>
+                </section>
+
+                <section class="d-grid gap-2">
+                    <input type="submit" value="Registrar Usuario" class="btn btn-primary" />
+                </section>
+            </form>
+        </section>
     </section>
 </section>
 
-<section>
-    <a href="@Url.Action("Index", "Home")" class="btn btn-danger mt-2">Regresar</a>
+<section class="text-center mt-3">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-warning">Regresar</a>
 </section>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

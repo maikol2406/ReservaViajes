@@ -1,63 +1,72 @@
 ﻿@model ReservaViajes.Models.Reservas.Reserva
 
 @{
-    ViewData["Title"] = "CrearReservas";
+    ViewData["Title"] = "Crear Reservas";
     List<SelectListItem> listaRutas = ViewBag.rutas;
 }
 
-<h1>Cree su Reserva</h1>
+<h1 class="text-center my-4">Crear su Reserva</h1>
 
-<h4>Ingrese los siguientes datos</h4>
-<hr />
-<section class="row">
-    <section class="col-md-4">
-        <form asp-action="CrearReservas">
-            <section asp-validation-summary="ModelOnly" class="text-danger"></section>
-            <section class="form-group" hidden>
-                <label asp-for="idReserva" class="control-label"></label>
-                <input asp-for="idReserva" class="form-control" />
-                <span asp-validation-for="idReserva" class="text-danger"></span>
-            </section>
-            <section class="form-group" hidden>
-                <label asp-for="idUsuario" class="control-label"></label>
-                <input asp-for="idUsuario" class="form-control" />
-                <span asp-validation-for="idUsuario" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label asp-for="nombreUsuario" class="control-label"></label>
-                <input asp-for="nombreUsuario" class="form-control" value="@User.Identity.Name" />
-                <span asp-validation-for="nombreUsuario" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label class="control-label">Ruta a tomar</label>
-                @Html.DropDownListFor(datos => datos.idRuta, listaRutas, "Seleccione la ruta deseada", new { @class = "form-control", @id = "rutaDropdown", @disabled = "disabled" })
-                <input type="hidden" asp-for="idRuta" id="idRutaHidden" name="idRuta" />
-                <span asp-validation-for="idRuta" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label class="control-label">Bus a abordar</label>
-                @Html.DropDownListFor(datos => datos.idBus, new List<SelectListItem>(), "Seleccione el bus deseado", new { @class = "form-control", @id = "busDropdown" })
-                <span asp-validation-for="idBus" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label>Seleccione los asientos:</label>
-                <section id="asientos">
+<section class="row justify-content-center">
+    <section class="col-md-6 col-lg-5">
+        <section class="card shadow-sm p-4">
+            <h4 class="text-center">Ingrese los siguientes datos</h4>
+            <hr />
+            <form asp-action="CrearReservas">
+                <section asp-validation-summary="ModelOnly" class="text-danger mb-3"></section>
+
+                <section class="form-group mb-3" hidden>
+                    <label asp-for="idReserva" class="control-label"></label>
+                    <input asp-for="idReserva" class="form-control" />
+                    <span asp-validation-for="idReserva" class="text-danger"></span>
                 </section>
-            </section>
-            <section class="form-group">
-                <label asp-for="costo" class="control-label"></label>
-                <input asp-for="costo" class="form-control totalCosto" id="totalCosto" />
-                <span asp-validation-for="costo" class="text-danger"></span>
-            </section>
-            <section class="form-group mt-2">
-                <input type="submit" value="Crear reserva" class="btn btn-primary" />
-            </section>
-        </form>
+
+                <section class="form-group mb-3" hidden>
+                    <label asp-for="idUsuario" class="control-label"></label>
+                    <input asp-for="idUsuario" class="form-control" />
+                    <span asp-validation-for="idUsuario" class="text-danger"></span>
+                </section>
+
+                <section class="form-group mb-3">
+                    <label asp-for="nombreUsuario" class="control-label"></label>
+                    <input asp-for="nombreUsuario" class="form-control" value="@User.Identity.Name" placeholder="Nombre del usuario" />
+                    <span asp-validation-for="nombreUsuario" class="text-danger"></span>
+                </section>
+
+                <section class="form-group mb-3">
+                    <label class="control-label">Ruta a tomar</label>
+                    @Html.DropDownListFor(datos => datos.idRuta, listaRutas, "Seleccione la ruta deseada", new { @class = "form-control", @id = "rutaDropdown", @disabled = "disabled" })
+                    <input type="hidden" asp-for="idRuta" id="idRutaHidden" name="idRuta" />
+                    <span asp-validation-for="idRuta" class="text-danger"></span>
+                </section>
+
+                <section class="form-group mb-3">
+                    <label class="control-label">Bus a abordar</label>
+                    @Html.DropDownListFor(datos => datos.idBus, new List<SelectListItem>(), "Seleccione el bus deseado", new { @class = "form-control", @id = "busDropdown" })
+                    <span asp-validation-for="idBus" class="text-danger"></span>
+                </section>
+
+                <section class="form-group mb-3">
+                    <label>Seleccione los asientos:</label>
+                    <section id="asientos"></section>
+                </section>
+
+                <section class="form-group mb-3">
+                    <label asp-for="costo" class="control-label"></label>
+                    <input asp-for="costo" class="form-control totalCosto" id="totalCosto" placeholder="Costo total" readonly />
+                    <span asp-validation-for="costo" class="text-danger"></span>
+                </section>
+
+                <section class="d-grid gap-2">
+                    <input type="submit" value="Crear Reserva" class="btn btn-primary" />
+                </section>
+            </form>
+        </section>
     </section>
 </section>
 
-<section>
-    <a asp-action="Index">Back to List</a>
+<section class="text-center mt-3">
+    <a asp-action="BuscarRutas" asp-controller="Buscador" class="btn btn-warning">Regresar a las búsquedas</a>
 </section>
 
 @section Scripts {

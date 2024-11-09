@@ -1,47 +1,55 @@
 ﻿@model ReservaViajes.Models.Usuarios.CambioPassword
 
 @{
-    ViewData["Title"] = "CambiarContrasena";
+    ViewData["Title"] = "Cambiar Contraseña";
 }
 
-<h1>CambiarContrasena</h1>
+<h1 class="text-center my-4">Cambiar Contraseña</h1>
 
-<h4>CambioPassword</h4>
-<hr />
-<section class="row">
-    <section class="col-md-4">
-        <form asp-action="CambiarContrasena" method="post">
-            @Html.AntiForgeryToken()
-            <section asp-validation-summary="ModelOnly" class="text-danger"></section>
-            <input type="hidden" asp-for="idUsuario" />
-            <section class="form-group">
-                <label asp-for="ContrasenaActual" class="control-label"></label>
-                <input asp-for="ContrasenaActual" class="form-control" type="password"/>
-                <span asp-validation-for="ContrasenaActual" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label asp-for="NuevaContrasena" class="control-label"></label>
-                <input asp-for="NuevaContrasena" class="form-control" type="password"/>
-                <span asp-validation-for="NuevaContrasena" class="text-danger"></span>
-            </section>
-            <section class="form-group">
-                <label asp-for="ConfirmarContrasena" class="control-label"></label>
-                <input asp-for="ConfirmarContrasena" class="form-control" type="password"/>
-                <span asp-validation-for="ConfirmarContrasena" class="text-danger"></span>
-            </section>
-            <section class="form-group mt-2">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </section>
-        </form>
+<section class="row justify-content-center">
+    <section class="col-md-6 col-lg-4">
+        <section class="card shadow-sm p-4">
+            <h4 class="text-center">Cambio de Contraseña</h4>
+            <hr />
+            <form asp-action="CambiarContrasena" method="post">
+                @Html.AntiForgeryToken()
+                <section asp-validation-summary="ModelOnly" class="text-danger mb-3"></section>
+                <input type="hidden" asp-for="idUsuario" />
+
+                <section class="form-group mb-3">
+                    <label asp-for="ContrasenaActual" class="control-label"></label>
+                    <input asp-for="ContrasenaActual" class="form-control" type="password" placeholder="Ingrese su contraseña actual" />
+                    <span asp-validation-for="ContrasenaActual" class="text-danger"></span>
+                </section>
+
+                <section class="form-group mb-3">
+                    <label asp-for="NuevaContrasena" class="control-label"></label>
+                    <input asp-for="NuevaContrasena" class="form-control" type="password" placeholder="Ingrese la nueva contraseña" />
+                    <span asp-validation-for="NuevaContrasena" class="text-danger"></span>
+                </section>
+
+                <section class="form-group mb-3">
+                    <label asp-for="ConfirmarContrasena" class="control-label"></label>
+                    <input asp-for="ConfirmarContrasena" class="form-control" type="password" placeholder="Confirme la nueva contraseña" />
+                    <span asp-validation-for="ConfirmarContrasena" class="text-danger"></span>
+                </section>
+
+                <section class="d-grid gap-2">
+                    <input type="submit" value="Actualizar Contraseña" class="btn btn-primary" />
+                </section>
+            </form>
+        </section>
     </section>
 </section>
 
-<section>
-    <a href="@Url.Action("Index", "Home")">Regresar</a>
+<section class="text-center mt-3">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-warning">Regresar</a>
 </section>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script type="text/javascript">
         $(document).ready(function () {

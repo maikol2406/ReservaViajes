@@ -1,20 +1,20 @@
 ﻿@model IEnumerable<ReservaViajes.Models.Rutas.Ruta>
 
 @{
-    ViewData["Title"] = "VerRutas";
+    ViewData["Title"] = "compra de tiquetes";
 }
 
-<h1>VerRutas</h1>
+<h1>Compra de tiquetes</h1>
 
 <p>
     <a asp-action="BuscarRutas" asp-controller="Buscador" class="btn btn-info">Realizar una busqueda</a>
 </p>
-<table class="table">
+<table class="table table-bordered table-hover">
     <thead>
         <tr>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.idRuta)
-            </th>
+            </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.nombreRuta)
             </th>
@@ -30,15 +30,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.fechaRuta)
             </th>
-            <th></th>
+            <th>Opciones</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            @* <td>
                 @Html.DisplayFor(modelItem => item.idRuta)
-            </td>
+            </td> *@
             <td>
                 @Html.DisplayFor(modelItem => item.nombreRuta)
             </td>
