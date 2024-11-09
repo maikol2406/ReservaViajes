@@ -18,6 +18,8 @@ namespace ReservaViajes.Data
             _configuration = configuration;
         }
 
+        public BaseDatos() { }
+
         string conexion = "DefaultConnection";
 
         public static string EncriptaContrasena(string password)
@@ -29,7 +31,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task<List<Usuario>> obtenerUsuarios()
+        public virtual async Task<List<Usuario>> obtenerUsuarios()
         {
             var listaUsuarios = new List<Usuario>();
 
@@ -59,7 +61,7 @@ namespace ReservaViajes.Data
             return listaUsuarios;
         }
 
-        public async void agregarUsuario(Usuario usuario)
+        public virtual async void agregarUsuario(Usuario usuario)
         {
             try
             {
@@ -87,7 +89,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task<bool> CambioContrasena(int idUsuario, string passwordActual, string passwordNuevo)
+        public virtual async Task<bool> CambioContrasena(int idUsuario, string passwordActual, string passwordNuevo)
         {
             var connectionString = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(connectionString))
@@ -119,7 +121,7 @@ namespace ReservaViajes.Data
             return true;
         }
 
-        public async Task<bool> ValidarUsuario(Login login)
+        public virtual async Task<bool> ValidarUsuario(Login login)
         {
             var connectionString = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(connectionString))
@@ -140,7 +142,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task<Usuario?> ObtenerUsuario(Models.Usuarios.Login login)
+        public virtual async Task<Usuario?> ObtenerUsuario(Models.Usuarios.Login login)
         {
             var connectionString = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(connectionString))
@@ -173,7 +175,7 @@ namespace ReservaViajes.Data
             return null;
         }
 
-        public async Task<List<Bus>> RetornaBuses()
+        public virtual async Task<List<Bus>> RetornaBuses()
         {
             var listaBuses = new List<Bus>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -205,7 +207,7 @@ namespace ReservaViajes.Data
             return listaBuses;
         }
 
-        public async Task<List<Bus>> ObtenerBusesXRuta(int idRuta)
+        public virtual async Task<List<Bus>> ObtenerBusesXRuta(int idRuta)
         {
             var listaBuses = new List<Bus>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -237,7 +239,7 @@ namespace ReservaViajes.Data
             return listaBuses;
         }
 
-        public async Task<Bus> ObtenerBus(int idBus)
+        public virtual async Task<Bus> ObtenerBus(int idBus)
         {
             var bus = new Bus();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -268,7 +270,7 @@ namespace ReservaViajes.Data
             return bus;
         }
 
-        public async Task<Bus> ObtenerBusPorId(int idBus)
+        public virtual async Task<Bus> ObtenerBusPorId(int idBus)
         {
             var stringConeccion = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(stringConeccion))
@@ -298,7 +300,7 @@ namespace ReservaViajes.Data
             return null;
         }
 
-        public async Task agregarBus(Bus bus)
+        public virtual async Task agregarBus(Bus bus)
         {
             var stringConexion = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(stringConexion))
@@ -327,7 +329,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task<List<Ruta>> ObtenerRutas()
+        public virtual async Task<List<Ruta>> ObtenerRutas()
         {
             var listaRutas = new List<Ruta>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -358,7 +360,7 @@ namespace ReservaViajes.Data
             return listaRutas;
         }
 
-        public async Task<Ruta> ObtenerRuta(int idRuta)
+        public virtual async Task<Ruta> ObtenerRuta(int idRuta)
         {
             var Ruta = new Ruta();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -389,7 +391,7 @@ namespace ReservaViajes.Data
             return Ruta;
         }
 
-        public async Task<List<Ruta>> ObtenerRutasFiltradas(string origen)
+        public virtual async Task<List<Ruta>> ObtenerRutasFiltradas(string origen)
         {
             var listaRuta = new List<Ruta>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -421,7 +423,7 @@ namespace ReservaViajes.Data
             return listaRuta;
         }
 
-        public async Task<List<string>> ObtenerOrigenes()
+        public virtual async Task<List<string>> ObtenerOrigenes()
         {
             var origenes = new List<string>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -472,7 +474,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task<List<Reserva>> ObtenerReservas()
+        public virtual async Task<List<Reserva>> ObtenerReservas()
         {
             var listaReservas = new List<Reserva>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -517,7 +519,7 @@ namespace ReservaViajes.Data
             return listaReservas;
         }
 
-        public async Task AgregarReserva(Reserva reserva)
+        public virtual async Task AgregarReserva(Reserva reserva)
         {
             var stringConexion = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(stringConexion))
@@ -552,7 +554,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task ActualizarReserva(int idReserva)
+        public virtual async Task ActualizarReserva(int idReserva)
         {
             var stringConexion = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(stringConexion))
@@ -577,7 +579,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task<Reserva> ObtenerReserva(int idReserva)
+        public virtual async Task<Reserva> ObtenerReserva(int idReserva)
         {
             Reserva reserva = new Reserva();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -617,7 +619,7 @@ namespace ReservaViajes.Data
             return reserva;
         }
 
-        public async Task<List<int>> ObtenerAsientosOcupados(int idBus)
+        public virtual async Task<List<int>> ObtenerAsientosOcupados(int idBus)
         {
             var asientosOcupados = new List<int>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -642,7 +644,7 @@ namespace ReservaViajes.Data
             return asientosOcupados;
         }
 
-        public async Task<List<Pago>> ObtenerPagos(int idCliente)
+        public virtual async Task<List<Pago>> ObtenerPagos(int idCliente)
         {
             var listaPagos = new List<Pago>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -677,7 +679,7 @@ namespace ReservaViajes.Data
             return listaPagos;
         }
 
-        public async Task AgregarPago(Pago pago)
+        public virtual async Task AgregarPago(Pago pago)
         {
             var stringConexion = _configuration.GetConnectionString(conexion);
             using (var conexion = new MySqlConnection(stringConexion))
@@ -712,7 +714,7 @@ namespace ReservaViajes.Data
             }
         }
 
-        public async Task<Pago> ObtenerPago(int idReserva)
+        public virtual async Task<Pago> ObtenerPago(int idReserva)
         {
             var pago = new Pago();
             var stringConeccion = _configuration.GetConnectionString(conexion);

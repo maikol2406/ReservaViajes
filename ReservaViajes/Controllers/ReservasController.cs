@@ -46,8 +46,16 @@ namespace ReservaViajes.Controllers
             idReserva++;
             var reserva = new Reserva 
             {
-                idReserva = idReserva 
+                idReserva = idReserva ,
+                idRuta = int.Parse(idRuta),
+                idUsuario = int.Parse(User.FindFirst("idUsuario")?.Value)
             };
+
+            var ruta = await _baseDatos.ObtenerRuta(reserva.idRuta);
+            if (ruta != null)
+            {
+                reserva.nombreRuta = ruta.nombreRuta;
+            }
 
             List<SelectListItem> rutas = new List<SelectListItem>();
             foreach (var item in await _baseDatos.ObtenerRutas())
@@ -76,6 +84,7 @@ namespace ReservaViajes.Controllers
             {
                 var ruta = await _baseDatos.ObtenerRuta(reserva.idRuta);
                 reserva.nombreRuta = ruta.nombreRuta;
+                reserva.costo = (int)ruta.costo;
                 var bus = await _baseDatos.ObtenerBus(reserva.idBus);
                 reserva.nombreBus = bus.nombre;
                 List<int> asientosSeleccionados = reserva.asientosSeleccionados;
