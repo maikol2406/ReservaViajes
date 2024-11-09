@@ -84,14 +84,9 @@ namespace ReservaViajes.Controllers
             {
                 var ruta = await _baseDatos.ObtenerRuta(reserva.idRuta);
                 reserva.nombreRuta = ruta.nombreRuta;
-                reserva.costo = (int)ruta.costo;
                 var bus = await _baseDatos.ObtenerBus(reserva.idBus);
                 reserva.nombreBus = bus.nombre;
                 List<int> asientosSeleccionados = reserva.asientosSeleccionados;
-                if (ViewBag.Costo != null)
-                {
-                    reserva.costo = decimal.Parse(ViewBag.Costo.ToString());
-                }
                 reserva.estado = false;
 
                 await _baseDatos.AgregarReserva(reserva);

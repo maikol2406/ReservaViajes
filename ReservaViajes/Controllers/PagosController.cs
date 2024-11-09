@@ -8,6 +8,7 @@ using ReservaViajes.Models.Pagos;
 using ReservaViajes.Models.Reservas;
 using ReservaViajes.Models.Rutas;
 using ReservaViajes.Models.Usuarios;
+using System.Diagnostics;
 using System.Security.Policy;
 using System.Text;
 using static System.Net.WebRequestMethods;
@@ -75,11 +76,13 @@ namespace ReservaViajes.Controllers
         {
             try
             {
-                string URL_SB2B = "http://localhost:62278/api/";
+                //string URL_SB2B = "http://localhost:62278/api/";
+                string URL_SB2B = "http://sb2b.superbaterias.com:44323/api/";
                 string token = "";
                 using (HttpClient client = new HttpClient())
                 {
-                    string url = "http://localhost:62278/generaToken";
+                    //string url = "http://localhost:62278/generaToken";
+                    string url = "http://sb2b.superbaterias.com:44323/generaToken";
                     Token objetoToken = new Token();
 
                     string jsonToken = JsonConvert.SerializeObject(objetoToken);
@@ -105,50 +108,111 @@ namespace ReservaViajes.Controllers
                         string respuestaPago = await responsePago.Content.ReadAsStringAsync();
                         UrlPago respuestaLinkPago = JsonConvert.DeserializeObject<UrlPago>(respuestaPago);
 
-                        using (HttpClient cliente2 = new HttpClient())
-                        {
-                            string link2 = URL_SB2B + "/chrome/open-chrome";
-                            string jsonPago2 = JsonConvert.SerializeObject(respuestaLinkPago);
-                            StringContent contenido2 = new StringContent(jsonPago2, Encoding.UTF8, "application/json");
+                        string scriptPath = @"C:\EqualRP\IntegracionBAC\run-sdk.ps1";
+                        string parametro = respuestaLinkPago.URL.ToString();
 
-                            HttpResponseMessage responseChrome = await cliente2.PostAsync(link2, contenido2);
-                            if (responsePago.IsSuccessStatusCode)
+                        ProcessStartInfo psi = new ProcessStartInfo
+                        {
+                            FileName = "powershell.exe",
+                            Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\" \"{parametro}\"",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+
+                        using (Process process = new Process { StartInfo = psi })
+                        {
+                            process.Start();
+
+                            // Captura la salida del proceso (opcional)
+                            string output = process.StandardOutput.ReadToEnd();
+                            string error = process.StandardError.ReadToEnd();
+
+                            process.WaitForExit();
+
+                            // Muestra la salida o error si lo necesitas
+                            Console.WriteLine("Output:");
+                            Console.WriteLine(output);
+                            Console.WriteLine("Error:");
+                            Console.WriteLine(error);
+                        }
+
+                        using (HttpClient clientePago = new HttpClient())
+                        {
+                            clientePago.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                            string linkPago = URL_SB2B + "ConsultaEstado";
+                            ConsultaPago consultaPago = new ConsultaPago();
+                            consultaPago.pk_tsal001 = pago.pk_tsal001;
+                            string jsonConsultaPago = JsonConvert.SerializeObject(consultaPago);
+                            StringContent contenidoPago = new StringContent(jsonConsultaPago, Encoding.UTF8, "application/json");
+                            //HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
+                            bool seguir = true;
+                            while (seguir)
                             {
-                                string respuestatoken = await responsePago.Content.ReadAsStringAsync();
-                                //await Task.Delay(30000);
-                                using (HttpClient clientePago = new HttpClient())
+                                HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
+                                //await Task.Delay(3000);
+                                if (responseConsultaPago.IsSuccessStatusCode)
                                 {
-                                    clientePago.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                                    string linkPago = URL_SB2B + "ConsultaEstado";
-                                    ConsultaPago consultaPago = new ConsultaPago();
-                                    consultaPago.pk_tsal001 = pago.pk_tsal001;
-                                    string jsonConsultaPago = JsonConvert.SerializeObject(consultaPago);
-                                    StringContent contenidoPago = new StringContent(jsonConsultaPago, Encoding.UTF8, "application/json");
-                                    //HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
-                                    bool seguir = true;
-                                    while (seguir)
+                                    string respuestaConsulta = await responseConsultaPago.Content.ReadAsStringAsync();
+                                    ConsultaPago consulta = JsonConvert.DeserializeObject<ConsultaPago>(respuestaConsulta);
+                                    if (consulta.codigo == 1)
                                     {
-                                        HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
-                                        await Task.Delay(3000);
-                                        if (responseConsultaPago.IsSuccessStatusCode)
-                                        {
-                                            string respuestaConsulta = await responseConsultaPago.Content.ReadAsStringAsync();
-                                            ConsultaPago consulta = JsonConvert.DeserializeObject<ConsultaPago>(respuestaConsulta);
-                                            if (consulta.codigo == 1)
-                                            {
-                                                await _baseDatos.AgregarPago(pago);
-                                                Reserva reserva = await _baseDatos.ObtenerReserva(pago.idReserva);
-                                                reserva.estado = true;
-                                                seguir = false;
-                                                await _baseDatos.ActualizarReserva(pago.idReserva);
-                                                return RedirectToAction("VerReservas", "Reservas");
-                                            }
-                                        }
+                                        await _baseDatos.AgregarPago(pago);
+                                        Reserva reserva = await _baseDatos.ObtenerReserva(pago.idReserva);
+                                        reserva.estado = true;
+                                        seguir = false;
+                                        await _baseDatos.ActualizarReserva(pago.idReserva);
+                                        return RedirectToAction("VerReservas", "Reservas");
                                     }
                                 }
-
                             }
                         }
+
+                        //using (HttpClient cliente2 = new HttpClient())
+                        //{
+                        //    string link2 = URL_SB2B + "/chrome/open-chrome";
+                        //    string jsonPago2 = JsonConvert.SerializeObject(respuestaLinkPago);
+                        //    StringContent contenido2 = new StringContent(jsonPago2, Encoding.UTF8, "application/json");
+
+                        //    HttpResponseMessage responseChrome = await cliente2.PostAsync(link2, contenido2);
+                        //    if (responsePago.IsSuccessStatusCode)
+                        //    {
+                        //        string respuestatoken = await responsePago.Content.ReadAsStringAsync();
+                        //        //await Task.Delay(30000);
+                        //        using (HttpClient clientePago = new HttpClient())
+                        //        {
+                        //            clientePago.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                        //            string linkPago = URL_SB2B + "ConsultaEstado";
+                        //            ConsultaPago consultaPago = new ConsultaPago();
+                        //            consultaPago.pk_tsal001 = pago.pk_tsal001;
+                        //            string jsonConsultaPago = JsonConvert.SerializeObject(consultaPago);
+                        //            StringContent contenidoPago = new StringContent(jsonConsultaPago, Encoding.UTF8, "application/json");
+                        //            //HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
+                        //            bool seguir = true;
+                        //            while (seguir)
+                        //            {
+                        //                HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
+                        //                await Task.Delay(3000);
+                        //                if (responseConsultaPago.IsSuccessStatusCode)
+                        //                {
+                        //                    string respuestaConsulta = await responseConsultaPago.Content.ReadAsStringAsync();
+                        //                    ConsultaPago consulta = JsonConvert.DeserializeObject<ConsultaPago>(respuestaConsulta);
+                        //                    if (consulta.codigo == 1)
+                        //                    {
+                        //                        await _baseDatos.AgregarPago(pago);
+                        //                        Reserva reserva = await _baseDatos.ObtenerReserva(pago.idReserva);
+                        //                        reserva.estado = true;
+                        //                        seguir = false;
+                        //                        await _baseDatos.ActualizarReserva(pago.idReserva);
+                        //                        return RedirectToAction("VerReservas", "Reservas");
+                        //                    }
+                        //                }
+                        //            }
+                        //        }
+
+                        //    }
+                        //}
                         //return RedirectToAction("VerReservas", "Reservas");
                         //return View();
                     }
