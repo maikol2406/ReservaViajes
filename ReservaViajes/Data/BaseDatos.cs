@@ -368,7 +368,7 @@ namespace ReservaViajes.Data
                 var query = "SELECT * FROM rutas WHERE idRuta = @idRuta";
                 using (var comando = new MySqlCommand(query, conexion))
                 {
-                    comando.Parameters.AddWithValue("idRuta", idRuta);
+                    comando.Parameters.AddWithValue("@idRuta", idRuta);
                     using (var lector = await comando.ExecuteReaderAsync())
                     {
                         while (await lector.ReadAsync())
@@ -389,6 +389,60 @@ namespace ReservaViajes.Data
             return Ruta;
         }
 
+        public async Task<List<Ruta>> ObtenerRutasFiltradas(string origen)
+        {
+            var listaRuta = new List<Ruta>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM rutas WHERE origen = @origen";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@origen", origen);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            var ruta = new Ruta
+                            {
+                                idRuta = lector.GetInt32("idRuta"),
+                                nombreRuta = lector.GetString("nombreRuta"),
+                                origen = lector.GetString("origen"),
+                                destino = lector.GetString("destino"),
+                                fechaRuta = lector.GetDateTime("fechaRuta"),
+                                costo = lector.GetDecimal("costo")
+                            };
+                            listaRuta.Add(ruta);
+                        }
+                    }
+                }
+            }
+            return listaRuta;
+        }
+
+        public async Task<List<string>> ObtenerOrigenes()
+        {
+            var origenes = new List<string>();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT DISTINCT origen FROM rutas;";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            origenes.Add(lector.GetString("origen"));
+                        }
+                    }
+                }
+            }
+            return origenes;
+        }
+
         public async Task agregarRuta(Ruta ruta)
         {
             var stringConexion = _configuration.GetConnectionString(conexion);
@@ -397,7 +451,7 @@ namespace ReservaViajes.Data
                 try
                 {
                     await conexion.OpenAsync();
-                    var query = "INSERT INTO rutas (idRuta, nombreRuta, origen, destino, fechaRuta, ruta) VALUES (@idRuta, @nombreRuta, @origen, @destino, @fechaRuta, @ruta);";
+                    var query = "INSERT INTO rutas (idRuta, nombreRuta, origen, destino, fechaRuta, costo) VALUES (@idRuta, @nombreRuta, @origen, @destino, @fechaRuta, @costo);";
                     using (var comando = new MySqlCommand(query, conexion))
                     {
                         comando.Parameters.AddWithValue("@idRuta", ruta.idRuta);
@@ -452,7 +506,8 @@ namespace ReservaViajes.Data
                                 idRuta = lector.IsDBNull(lector.GetOrdinal("idRuta")) ? 0 : lector.GetInt32("idRuta"),
                                 nombreRuta = lector.IsDBNull(lector.GetOrdinal("nombreRuta")) ? "" : lector.GetString("nombreRuta"),
                                 asientosSeleccionados = asientosSeleccionados,
-                                costo = lector.IsDBNull(lector.GetOrdinal("costo")) ? 0 : lector.GetInt32("costo")
+                                costo = lector.IsDBNull(lector.GetOrdinal("costo")) ? 0 : lector.GetInt32("costo"),
+                                estado = lector.IsDBNull(lector.GetOrdinal("estado")) ? false : lector.GetBoolean("estado")
                             };
                             listaReservas.Add(reserva);
                         }
@@ -471,8 +526,8 @@ namespace ReservaViajes.Data
                 {
                     await conexion.OpenAsync();
                     string asientosSeleccionados = string.Join(",", reserva.asientosSeleccionados);
-                    var query = "INSERT INTO reservas (idReserva, idUsuario, nombreUsuario, idBus, nombreBus, idRuta, nombreRuta, asientosSeleccionados, costo)" +
-                        "VALUES (@idReserva, @idUsuario, @nombreUsuario, @idBus, @nombreBus, @idRuta, @nombreRuta, @asientosSeleccionados, @costo);";
+                    var query = "INSERT INTO reservas (idReserva, idUsuario, nombreUsuario, idBus, nombreBus, idRuta, nombreRuta, asientosSeleccionados, costo, estado)" +
+                        "VALUES (@idReserva, @idUsuario, @nombreUsuario, @idBus, @nombreBus, @idRuta, @nombreRuta, @asientosSeleccionados, @costo, @estado);";
                     using (var comando = new MySqlCommand(query, conexion))
                     {
                         comando.Parameters.AddWithValue("@idReserva", reserva.idReserva);
@@ -484,6 +539,7 @@ namespace ReservaViajes.Data
                         comando.Parameters.AddWithValue("@nombreRuta", reserva.nombreRuta);
                         comando.Parameters.AddWithValue("@asientosSeleccionados", asientosSeleccionados);
                         comando.Parameters.AddWithValue("@costo", reserva.costo);
+                        comando.Parameters.AddWithValue("@estado", reserva.estado);
 
                         await comando.ExecuteNonQueryAsync();
                     }
@@ -492,6 +548,31 @@ namespace ReservaViajes.Data
                 {
 
                     throw new Exception("Error al guardar los datos de la reserva. " + e.Message);
+                }
+            }
+        }
+
+        public async Task ActualizarReserva(int idReserva)
+        {
+            var stringConexion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConexion))
+            {
+                try
+                {
+                    await conexion.OpenAsync();
+                    var query = "UPDATE reservas SET estado = @estado WHERE idReserva = @idReserva;";
+                    using (var comando = new MySqlCommand(query, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@estado", 1);
+                        comando.Parameters.AddWithValue("@idReserva", idReserva);
+
+                        await comando.ExecuteNonQueryAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw new Exception("Error al actualizar el estado de la reserva. " + e.Message);
                 }
             }
         }
@@ -561,7 +642,7 @@ namespace ReservaViajes.Data
             return asientosOcupados;
         }
 
-        public async Task<List<Pago>> ObtenerPagos()
+        public async Task<List<Pago>> ObtenerPagos(int idCliente)
         {
             var listaPagos = new List<Pago>();
             var stringConeccion = _configuration.GetConnectionString(conexion);
@@ -578,13 +659,15 @@ namespace ReservaViajes.Data
                             var pago = new Pago
                             {
                                 pk_tsal001 = lector.IsDBNull(lector.GetOrdinal("pk_tsal001")) ? "" : lector.GetString("pk_tsal001"),
+                                idReserva = lector.IsDBNull(lector.GetInt32("idReserva")) ? 0 : lector.GetInt32("idReserva"),
                                 terminalId = lector.IsDBNull(lector.GetOrdinal("terminalId")) ? "" : lector.GetString("terminalId"),
                                 transactionType = lector.IsDBNull(lector.GetOrdinal("transactionType")) ? "" : lector.GetString("transactionType"),
                                 invoice = lector.IsDBNull(lector.GetOrdinal("invoice")) ? "" : lector.GetString("invoice"),
                                 totalAmount = lector.IsDBNull(lector.GetOrdinal("totalAmount")) ? "" : lector.GetString("totalAmount"),
                                 taxAmount = lector.IsDBNull(lector.GetOrdinal("taxAmount")) ? "" : lector.GetString("taxAmount"),
                                 tipAmount = lector.IsDBNull(lector.GetOrdinal("tipAmount")) ? "" : lector.GetString("tipAmount"),
-                                clientEmail = lector.IsDBNull(lector.GetOrdinal("clientEmail")) ? "" : lector.GetString("clientEmail")
+                                clientEmail = lector.IsDBNull(lector.GetOrdinal("clientEmail")) ? "" : lector.GetString("clientEmail"),
+                                idCliente = lector.IsDBNull(lector.GetOrdinal("idCliente")) ? 0 : lector.GetInt32("idCliente")
                             };
                             listaPagos.Add(pago);
                         }
@@ -603,11 +686,12 @@ namespace ReservaViajes.Data
                 {
                     await conexion.OpenAsync();
 
-                    var query = "INSERT INTO pagos (pk_tsal001, terminalId, transactionType, invoice, totalAmount, taxAmount, tipAmount, clientEmail)" +
-                        "VALUES (@pk_tsal001, @terminalId, @transactionType, @invoice, @totalAmount, @taxAmount, @tipAmount, @clientEmail);";
+                    var query = "INSERT INTO pagos (pk_tsal001, idReserva, terminalId, transactionType, invoice, totalAmount, taxAmount, tipAmount, clientEmail, idCliente)" +
+                        "VALUES (@pk_tsal001, @idReserva, @terminalId, @transactionType, @invoice, @totalAmount, @taxAmount, @tipAmount, @clientEmail, @idCliente);";
                     using (var comando = new MySqlCommand(query, conexion))
                     {
                         comando.Parameters.AddWithValue("@pk_tsal001", pago.pk_tsal001);
+                        comando.Parameters.AddWithValue("@idReserva", pago.idReserva);
                         comando.Parameters.AddWithValue("@terminalId", pago.terminalId);
                         comando.Parameters.AddWithValue("@transactionType", pago.transactionType);
                         comando.Parameters.AddWithValue("@invoice", pago.invoice);
@@ -615,6 +699,7 @@ namespace ReservaViajes.Data
                         comando.Parameters.AddWithValue("@taxAmount", pago.taxAmount);
                         comando.Parameters.AddWithValue("@tipAmount", pago.tipAmount);
                         comando.Parameters.AddWithValue("@clientEmail", pago.clientEmail);
+                        comando.Parameters.AddWithValue("@idCliente", pago.idCliente);
 
                         await comando.ExecuteNonQueryAsync();
                     }
@@ -625,6 +710,41 @@ namespace ReservaViajes.Data
                     throw new Exception("Error al guardar los datos de la reserva. " + e.Message);
                 }
             }
+        }
+
+        public async Task<Pago> ObtenerPago(int idReserva)
+        {
+            var pago = new Pago();
+            var stringConeccion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConeccion))
+            {
+                await conexion.OpenAsync();
+                var query = "SELECT * FROM pagos WHERE idReserva = @idReserva ORDER BY pk_tsal001 DESC LIMIT 1;";
+                using (var comando = new MySqlCommand(query, conexion))
+                {
+                    comando.Parameters.AddWithValue("@idReserva", idReserva);
+                    using (var lector = await comando.ExecuteReaderAsync())
+                    {
+                        while (await lector.ReadAsync())
+                        {
+                            pago = new Pago
+                            {
+                                pk_tsal001 = lector.IsDBNull(lector.GetOrdinal("pk_tsal001")) ? "" : lector.GetString("pk_tsal001"),
+                                idReserva = lector.IsDBNull(lector.GetInt32("idReserva")) ? 0 : lector.GetInt32("idReserva"),
+                                terminalId = lector.IsDBNull(lector.GetOrdinal("terminalId")) ? "" : lector.GetString("terminalId"),
+                                transactionType = lector.IsDBNull(lector.GetOrdinal("transactionType")) ? "" : lector.GetString("transactionType"),
+                                invoice = lector.IsDBNull(lector.GetOrdinal("invoice")) ? "" : lector.GetString("invoice"),
+                                totalAmount = lector.IsDBNull(lector.GetOrdinal("totalAmount")) ? "" : lector.GetString("totalAmount"),
+                                taxAmount = lector.IsDBNull(lector.GetOrdinal("taxAmount")) ? "" : lector.GetString("taxAmount"),
+                                tipAmount = lector.IsDBNull(lector.GetOrdinal("tipAmount")) ? "" : lector.GetString("tipAmount"),
+                                clientEmail = lector.IsDBNull(lector.GetOrdinal("clientEmail")) ? "" : lector.GetString("clientEmail"),
+                                idCliente = lector.IsDBNull(lector.GetOrdinal("idCliente")) ? 0 : lector.GetInt32("idCliente")
+                            };
+                        }
+                    }
+                }
+            }
+            return pago;
         }
 
     }

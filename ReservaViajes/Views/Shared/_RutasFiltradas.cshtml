@@ -1,0 +1,62 @@
+﻿@model IEnumerable<ReservaViajes.Models.Rutas.Ruta>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.idRuta)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.nombreRuta)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.origen)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.destino)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.fechaRuta)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.costo)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ruta in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => ruta.idRuta)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ruta.nombreRuta)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ruta.origen)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ruta.destino)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ruta.fechaRuta)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ruta.costo)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Realizar compra", "CrearReservas", "Reservas", new { idRuta = ruta.idRuta })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No se encontraron rutas para el origen seleccionado.</p>
+}

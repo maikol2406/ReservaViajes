@@ -74,8 +74,17 @@
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Pagar Reserva", "CrearPago", "Pagos", new { idReserva = item.idReserva }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                
+                @if (!item.estado)
+                {
+                    @Html.ActionLink("Pagar Reserva", "CrearPago", "Pagos", new { idReserva = item.idReserva })
+                }
+                else
+                {
+                    @Html.ActionLink("Ver comprobante", "VerComprobante", "Pagos", new { idReserva = item.idReserva })
+                }
+                
+                | @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>
 }

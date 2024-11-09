@@ -1,0 +1,54 @@
+﻿@model IEnumerable<ReservaViajes.Models.Rutas.Ruta>
+
+@{
+    ViewData["Title"] = "Buscar Rutas";
+}
+
+<h1>Buscar Rutas</h1>
+
+<form id="buscarRutas" method="post" asp-action="ObtenerRutasFiltro">
+    @Html.AntiForgeryToken()
+    <section class="form-group">
+        <label for="origen">Seleccione el Origen:</label>
+        <select name="origen" class="form-control" id="origenDropdown">
+            <option value="">Seleccione un origen</option>
+            @foreach (SelectListItem origen in ViewBag.Origenes)
+            {
+                <option value="@origen.Value">@origen.Text</option>
+            }
+        </select>
+    </section>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+<section id="resultadosBusqueda">
+
+</section>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#buscarRutas').on('submit', function (event) {
+                event.preventDefault();
+                var origen = $('#origenDropdown').val();
+
+                if (origen) {
+                    $.ajax({
+                        url: '@Url.Action("ObtenerRutasFiltro", "Buscador")',
+                        type: 'POST',
+                        data: { origen: origen },
+                        success: function (data) {
+                            $('#resultadosBusqueda').html(data);
+                        },
+                        error: function () {
+                            alert("Error al obtener las rutas. Intente nuevamente.");
+                        }
+                    });
+                } else {
+                    alert("Por favor, seleccione un origen.");
+                }
+            });
+        });
+    </script>
+}

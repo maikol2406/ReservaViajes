@@ -22,6 +22,15 @@ namespace ReservaViajes.Controllers
         public async Task<ActionResult> VerReservas()
         {
             var listaReservas = await _baseDatos.ObtenerReservas();
+            //List<Reserva> lista = new List<Reserva>();
+            //foreach (var item in listaReservas)
+            //{
+            //    if (item.estado == false)
+            //    {
+            //        lista.Add(item);
+            //    }
+            //}
+
             return View(listaReservas);
         }
 
@@ -74,6 +83,7 @@ namespace ReservaViajes.Controllers
                 {
                     reserva.costo = decimal.Parse(ViewBag.Costo.ToString());
                 }
+                reserva.estado = false;
 
                 await _baseDatos.AgregarReserva(reserva);
 

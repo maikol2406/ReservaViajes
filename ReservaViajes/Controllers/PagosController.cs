@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NuGet.Common;
 using ReservaViajes.Data;
 using ReservaViajes.Models.Pagos;
+using ReservaViajes.Models.Reservas;
 using ReservaViajes.Models.Usuarios;
 using System.Security.Policy;
 using System.Text;
@@ -22,10 +24,11 @@ namespace ReservaViajes.Controllers
         }
 
         // GET: PagosController
-        public ActionResult VerPagos()
+        public async Task<ActionResult> VerPagos()
         {
-
-            return View();
+            int idCliente = int.Parse(User.FindFirst("idUsuario")?.Value);
+            List<Pago> listaPagos = await _baseDatos.ObtenerPagos(idCliente);
+            return View(listaPagos);
         }
 
         // GET: PagosController/Create
@@ -35,7 +38,8 @@ namespace ReservaViajes.Controllers
             var reserva = await _baseDatos.ObtenerReserva(int.Parse(idReserva));
             string? correo = User.FindFirst("correo")?.Value;
             Pago pago = new Pago();
-            List<Pago> listaPagos = await _baseDatos.ObtenerPagos();
+            int idCliente = int.Parse(User.FindFirst("idUsuario")?.Value);
+            List<Pago> listaPagos = await _baseDatos.ObtenerPagos(idCliente);
             
             int nro = 0;
             if (listaPagos.Count() == 0)
@@ -48,6 +52,7 @@ namespace ReservaViajes.Controllers
                 string ultimoPago = listaPagos.LastOrDefault().pk_tsal001;
                 pago.pk_tsal001 = factura + (long.Parse(ultimoPago.Substring(ultimoPago.Length - 10)) + 1).ToString().PadLeft(10, '0');
             }
+            pago.idReserva = int.Parse(idReserva);
             pago.terminalId = "EMVSBAT1";
             pago.transactionType = "SALE";
             pago.invoice = pago.pk_tsal001.Substring(pago.pk_tsal001.Length - 10);
@@ -57,7 +62,8 @@ namespace ReservaViajes.Controllers
             pago.taxAmount = impuesto.ToString();
             pago.tipAmount = "0";
             pago.clientEmail = correo;
-            
+            pago.idCliente = idCliente;
+
             return View(pago);
         }
 
@@ -117,26 +123,32 @@ namespace ReservaViajes.Controllers
                                     consultaPago.pk_tsal001 = pago.pk_tsal001;
                                     string jsonConsultaPago = JsonConvert.SerializeObject(consultaPago);
                                     StringContent contenidoPago = new StringContent(jsonConsultaPago, Encoding.UTF8, "application/json");
-                                    HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
+                                    //HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
                                     bool seguir = true;
                                     while (seguir)
                                     {
+                                        HttpResponseMessage responseConsultaPago = await clientePago.PostAsync(linkPago, contenidoPago);
+                                        await Task.Delay(3000);
                                         if (responseConsultaPago.IsSuccessStatusCode)
                                         {
-                                            await _baseDatos.AgregarPago(pago);
-                                            seguir = false;
-                                            return RedirectToAction("Index", "Home");
-                                        }
-                                        else
-                                        {
-                                            await Task.Delay(5000);
+                                            string respuestaConsulta = await responseConsultaPago.Content.ReadAsStringAsync();
+                                            ConsultaPago consulta = JsonConvert.DeserializeObject<ConsultaPago>(respuestaConsulta);
+                                            if (consulta.codigo == 1)
+                                            {
+                                                await _baseDatos.AgregarPago(pago);
+                                                Reserva reserva = await _baseDatos.ObtenerReserva(pago.idReserva);
+                                                reserva.estado = true;
+                                                seguir = false;
+                                                await _baseDatos.ActualizarReserva(pago.idReserva);
+                                                return RedirectToAction("VerReservas", "Reservas");
+                                            }
                                         }
                                     }
                                 }
 
                             }
                         }
-                        return RedirectToAction("VerReservas", "Reservas");
+                        //return RedirectToAction("VerReservas", "Reservas");
                         //return View();
                     }
                 }
@@ -146,6 +158,13 @@ namespace ReservaViajes.Controllers
             {
                 return View();
             }
+        }
+
+        // GET: PagosController
+        public async Task<ActionResult> VerComprobante(string idReserva)
+        {
+           Pago pago = await _baseDatos.ObtenerPago(int.Parse(idReserva));
+           return View(pago);
         }
 
         // GET: PagosController

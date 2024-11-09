@@ -33,5 +33,6 @@ namespace ReservaViajes.Models.Reservas
         public List<int> asientosSeleccionados { get; set; } = new List<int>();
         [Required]
         public int costo{ get; set; }
+        public bool estado { get; set; }
     }
 }

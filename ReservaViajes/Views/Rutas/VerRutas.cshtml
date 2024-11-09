@@ -55,9 +55,7 @@
                 @Html.DisplayFor(modelItem => item.fechaRuta)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Realizar compra", "CrearReservas", "Reservas", new { idRuta = item.idRuta }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Realizar compra", "CrearReservas", "Reservas", new { idRuta = item.idRuta })
             </td>
         </tr>
 }

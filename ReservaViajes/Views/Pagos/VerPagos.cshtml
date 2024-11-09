@@ -1,0 +1,87 @@
+﻿@model IEnumerable<ReservaViajes.Models.Pagos.Pago>
+
+@{
+    ViewData["Title"] = "VerPagos";
+}
+
+<h1>VerPagos</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.pk_tsal001)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.idReserva)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.terminalId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.transactionType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.invoice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.totalAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.taxAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.tipAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.clientEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.idCliente)
+            </th>
+            @* <th></th> *@
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.pk_tsal001)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.idReserva)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.terminalId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.transactionType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.invoice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.totalAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.taxAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.tipAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.clientEmail)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.idCliente)
+            </td>
+            @* <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td> *@
+        </tr>
+}
+    </tbody>
+</table>
