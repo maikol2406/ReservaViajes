@@ -1,7 +1,11 @@
-﻿@model ReservaViajes.Models.Pagos.Pago
+﻿@using ReservaViajes.Models.Reservas
+@using ReservaViajes.Models.Rutas
+@model ReservaViajes.Models.Pagos.Pago
 
 @{
     ViewData["Title"] = "VerComprobante";
+    Reserva datosReserva = ViewBag.reserva;
+    Ruta datosRuta = ViewBag.ruta;
 }
 
 <h1>VerComprobante</h1>
@@ -69,6 +73,24 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.idCliente)
+        </dd>
+        <dt class="col-sm-2">
+            Ruta
+        </dt>
+        <dd class="col-sm-10">
+            @datosReserva.nombreRuta
+        </dd>
+        <dt class="col-sm-2">
+            Asientos
+        </dt>
+        <dd class="col-sm-10">
+            @string.Join(", ", datosReserva.asientosSeleccionados)
+        </dd>
+        <dt class="col-sm-2">
+            Fecha y hora
+        </dt>
+        <dd class="col-sm-10">
+            @datosRuta.fechaRuta
         </dd>
     </dl>
 </section>

@@ -10,7 +10,8 @@
 <hr />
 <section class="row">
     <section class="col-md-4">
-        <form asp-action="CambiarContrasena">
+        <form asp-action="CambiarContrasena" method="post">
+            @Html.AntiForgeryToken()
             <section asp-validation-summary="ModelOnly" class="text-danger"></section>
             <input type="hidden" asp-for="idUsuario" />
             <section class="form-group">
@@ -41,4 +42,13 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var errorMessage = '@ViewData["ErrorMessage"]';
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+        });
+    </script>
 }

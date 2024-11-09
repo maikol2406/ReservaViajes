@@ -13,7 +13,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.pk_tsal001)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.idReserva)
             </th>
             <th>
@@ -21,7 +21,7 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.transactionType)
-            </th>
+            </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.invoice)
             </th>
@@ -31,16 +31,16 @@
             <th>
                 @Html.DisplayNameFor(model => model.taxAmount)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.tipAmount)
-            </th>
+            </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.clientEmail)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.idCliente)
             </th>
-            @* <th></th> *@
+            <th>Opciones</th>
         </tr>
     </thead>
     <tbody>
@@ -49,7 +49,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.pk_tsal001)
             </td>
-            <td>
+            @* <td>
                 @Html.DisplayFor(modelItem => item.idReserva)
             </td>
             <td>
@@ -57,7 +57,7 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.transactionType)
-            </td>
+            </td> *@
             <td>
                 @Html.DisplayFor(modelItem => item.invoice)
             </td>
@@ -67,20 +67,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.taxAmount)
             </td>
-            <td>
+            @* <td>
                 @Html.DisplayFor(modelItem => item.tipAmount)
-            </td>
+            </td> *@
             <td>
                 @Html.DisplayFor(modelItem => item.clientEmail)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.idCliente)
             </td>
-            @* <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td> *@
+            <td>
+                @* @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) | *@
+                @Html.ActionLink("Ver comprobante", "VerComprobante", "Pagos", new { idReserva = item.idReserva }, new { @class = "btn btn-success"})
+                @* @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ }) *@
+            </td>
         </tr>
 }
     </tbody>

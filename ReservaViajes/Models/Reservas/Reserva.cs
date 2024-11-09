@@ -32,6 +32,8 @@ namespace ReservaViajes.Models.Reservas
         [Display(Name = "Asientos seleccionados")]
         public List<int> asientosSeleccionados { get; set; } = new List<int>();
         [Required]
+        [Display(Name = "Monto total")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public int costo{ get; set; }
         public bool estado { get; set; }
     }

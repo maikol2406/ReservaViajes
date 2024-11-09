@@ -49,7 +49,7 @@
                         @Html.DisplayFor(modelItem => ruta.costo)
                     </td>
                     <td>
-                        @Html.ActionLink("Realizar compra", "CrearReservas", "Reservas", new { idRuta = ruta.idRuta })
+                        @Html.ActionLink("Realizar compra", "CrearReservas", "Reservas", new { idRuta = ruta.idRuta }, new { @class = "btn btn-success"})
                     </td>
                 </tr>
             }

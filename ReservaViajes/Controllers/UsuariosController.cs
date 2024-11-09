@@ -120,8 +120,8 @@ namespace ReservaViajes.Controllers
 
             if (!resultado)
             {
-                ModelState.AddModelError(string.Empty, "La contraseña actual es incorrecta.");
-                return View();
+                ViewData["ErrorMessage"] = "La contrasena actual es incorrecta.";
+                return View(cambio);
             }
 
             return RedirectToAction(nameof(Login));

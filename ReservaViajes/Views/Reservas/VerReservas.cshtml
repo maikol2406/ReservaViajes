@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<ReservaViajes.Models.Reservas.Reserva>
 
 @{
-    ViewData["Title"] = "VerReservas";
+    ViewData["Title"] = "Ver mis Reservas";
 }
 
 <h1>VerReservas</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="BuscarRutas" asp-controller="Buscador" class="btn btn-info">Iniciar nueva compra</a>
 </p>
 <table class="table">
     <thead>
@@ -39,7 +39,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.costo)
             </th>
-            <th></th>
+            <th>Opciones</th>
         </tr>
     </thead>
     <tbody>
@@ -73,18 +73,14 @@
                 @Html.DisplayFor(modelItem => item.costo)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                
                 @if (!item.estado)
                 {
-                    @Html.ActionLink("Pagar Reserva", "CrearPago", "Pagos", new { idReserva = item.idReserva })
+                        @Html.ActionLink("Pagar Reserva", "CrearPago", "Pagos", new { idReserva = item.idReserva }, new { @class = "btn btn-danger" })
                 }
                 else
                 {
-                    @Html.ActionLink("Ver comprobante", "VerComprobante", "Pagos", new { idReserva = item.idReserva })
+                        @Html.ActionLink("Ver comprobante", "VerComprobante", "Pagos", new { idReserva = item.idReserva }, new { @class = "btn btn-success" })
                 }
-                
-                | @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>
 }

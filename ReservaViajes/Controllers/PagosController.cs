@@ -6,6 +6,7 @@ using NuGet.Common;
 using ReservaViajes.Data;
 using ReservaViajes.Models.Pagos;
 using ReservaViajes.Models.Reservas;
+using ReservaViajes.Models.Rutas;
 using ReservaViajes.Models.Usuarios;
 using System.Security.Policy;
 using System.Text;
@@ -163,8 +164,12 @@ namespace ReservaViajes.Controllers
         // GET: PagosController
         public async Task<ActionResult> VerComprobante(string idReserva)
         {
-           Pago pago = await _baseDatos.ObtenerPago(int.Parse(idReserva));
-           return View(pago);
+            Pago pago = await _baseDatos.ObtenerPago(int.Parse(idReserva));
+            Reserva datosReserva = await _baseDatos.ObtenerReserva(int.Parse(idReserva));
+            ViewBag.reserva = datosReserva;
+            Ruta datosRuta = await _baseDatos.ObtenerRuta(int.Parse(idReserva));
+            ViewBag.ruta = datosRuta;
+            return View(pago);
         }
 
         // GET: PagosController
