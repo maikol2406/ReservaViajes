@@ -554,6 +554,29 @@ namespace ReservaViajes.Data
             }
         }
 
+        public virtual async Task EliminarReserva(int idReserva)
+        {
+            var stringConexion = _configuration.GetConnectionString(conexion);
+            using (var conexion = new MySqlConnection(stringConexion))
+            {
+                try
+                {
+                    await conexion.OpenAsync();
+                    var query = "DELETE FROM reservas WHERE idReserva = @idReserva;";
+                    using (var comando = new MySqlCommand(query, conexion))
+                    {
+                        comando.Parameters.AddWithValue("@idReserva", idReserva);
+
+                        await comando.ExecuteNonQueryAsync();
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Error al eliminar la reserva. " + e.Message);
+                }
+            }
+        }
+
         public virtual async Task ActualizarReserva(int idReserva)
         {
             var stringConexion = _configuration.GetConnectionString(conexion);

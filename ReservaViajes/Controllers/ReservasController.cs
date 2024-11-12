@@ -22,6 +22,15 @@ namespace ReservaViajes.Controllers
         public async Task<ActionResult> VerReservas()
         {
             var listaReservas = await _baseDatos.ObtenerReservas();
+            int idCliente = int.Parse(User.FindFirst("idUsuario")?.Value);
+            List<Reserva> listaFiltrada = new List<Reserva>();
+            foreach (var item in listaReservas)
+            {
+                if (item.idUsuario == idCliente && !item.estado)
+                {
+                    listaFiltrada.Add(item);
+                }
+            }
             //List<Reserva> lista = new List<Reserva>();
             //foreach (var item in listaReservas)
             //{
@@ -31,7 +40,7 @@ namespace ReservaViajes.Controllers
             //    }
             //}
 
-            return View(listaReservas);
+            return View(listaFiltrada);
         }
 
         // GET: ReservasController/Create
@@ -136,45 +145,17 @@ namespace ReservaViajes.Controllers
             return Json(asientosOcupados);
         }
 
-        // GET: ReservasController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: ReservasController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
         // GET: ReservasController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ReservasController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> EliminarReserva(string idReserva)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                await _baseDatos.EliminarReserva(int.Parse(idReserva));
+                return RedirectToAction("VerReservas", "Reservas");
             }
             catch
             {
-                return View();
+                return RedirectToAction("VerReservas", "Reservas");
             }
         }
     }

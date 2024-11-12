@@ -49,9 +49,7 @@
                 @Html.DisplayFor(modelItem => item.confirmaPassword)
             </td> *@
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Cambiar contraseña", "CambiarContrasena", new { idUsuario = item.idUsuario }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Cambiar contraseña", "CambiarContrasena", new { idUsuario = item.idUsuario })
             </td>
         </tr>
 }

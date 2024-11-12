@@ -75,12 +75,14 @@
             <td>
                 @if (!item.estado)
                 {
-                        @Html.ActionLink("Pagar Reserva", "CrearPago", "Pagos", new { idReserva = item.idReserva }, new { @class = "btn btn-danger" })
+                    @Html.ActionLink("Pagar Reserva", "CrearPago", "Pagos", new { idReserva = item.idReserva }, new { @class = "btn btn-warning m-2" })
+                    @Html.ActionLink("Eliminar reserva", "EliminarReserva", "Reservas", new { idReserva = item.idReserva }, new { @class = "btn btn-danger m-2" })
                 }
                 else
                 {
-                        @Html.ActionLink("Ver comprobante", "VerComprobante", "Pagos", new { idReserva = item.idReserva }, new { @class = "btn btn-success" })
+                    @Html.ActionLink("Ver comprobante", "VerComprobante", "Pagos", new { idReserva = item.idReserva }, new { @class = "btn btn-success m-2" })
                 }
+                    
             </td>
         </tr>
 }
